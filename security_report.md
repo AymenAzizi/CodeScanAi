@@ -18,14 +18,14 @@ You are an expert in software security analysis,
             could impact the overall security of the application.
 
             CODE TO ANALYZE:
-            
+
 
 File: .env
-HUGGING_FACE_TOKEN=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
-HF_TOKEN=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
-NVD_API_KEY=8f6d3844-62e5-4047-8550-e8dc5fcf4982
+HUGGING_FACE_TOKEN=[REDACTED]
+HF_TOKEN=[REDACTED]
+NVD_API_KEY=[REDACTED]
 # Replace with your new token that has repo scope permissions
-GITHUB_TOKEN=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
+GITHUB_TOKEN=[REDACTED]
 
 File: .gitignore
 # Byte-compiled / optimized / DLL files
@@ -84,10 +84,10 @@ In the provided code snippets, there are potential security risks that need atte
 
 1. Environmental variables:
    - In the .env file, sensitive information such as API keys for Hugging Face, NVD, and GitHub are hardcoded. It is strongly recommended to securely store these credentials as environment variables within an encrypted configuration file or use a secrets manager service like AWS Secrets Manager or Azure Key Vault.
-   - The GitHub token provided (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) granted repo scope permissions, which means the token can access all repositories in the authenticated account. It is best practice to limit the token scope to only necessary permissions, and avoid hardcoding sensitive tokens in files or repositories. Instead, use environment variables securely or store tokens in a vault solution.
+   - The GitHub token provided granted repo scope permissions, which means the token can access all repositories in the authenticated account. It is best practice to limit the token scope to only necessary permissions, and avoid hardcoding sensitive tokens in files or repositories. Instead, use environment variables securely or store tokens in a vault solution.
 
 2. .gitignore file:
-   - The .gitignore file is configured to ignore several files related to the Python project, including compiled code and resources generated during the build process. However, it negligicts the '__pycache__/', ‘*.py[cod]', and ‘*$py.class' files that contain the byte-compiled versions of the source code files. Malicious actors could potentially find these byte-compiled files source code that can lead to unauthorized access and code manipulation.
+   - The .gitignore file is configured to ignore several files related to the Python project, including compiled code and resources generated during the build process. However, it negligicts the '__pycache__/', ï¿½*.py[cod]', and ï¿½*$py.class' files that contain the byte-compiled versions of the source code files. Malicious actors could potentially find these byte-compiled files source code that can lead to unauthorized access and code manipulation.
 
    To mitigate this risk, it is recommended to exclude the '__pycache__' directory and its contents from the .gitignore file. However, in a production environment, it is best to have a separate deployment environment for building and releasing the code, ensuring production code is never pushed to the repository.
 
@@ -128,7 +128,7 @@ Original Code
 13 $userId = $_GET['id'];
 14 $query = "SELECT * FROM users WHERE id = " . $userId;  // SQL Injection
 15 $result = mysqli_query($conn, $query);
-16 
+16
 17 // Another SQL Injection vulnerability
 18 $searchTerm = $_POST['search'];
 **Suggested Fix:**
@@ -156,18 +156,18 @@ $result = $stmt->fetchAll();
 
 Suggested Fix
 13 Use prepared statements instead of directly including variables in queries:
-14 
+14
 15 ```php
 16 // Instead of:
 17 $query = "SELECT * FROM users WHERE id = " . $_GET['id'];
 18 $result = $mysqli->query($query);
-19 
+19
 20 // Use:
 21 $stmt = $mysqli->prepare("SELECT * FROM users WHERE id = ?");
 22 $stmt->bind_param("i", $_GET['id']);
 23 $stmt->execute();
 24 $result = $stmt->get_result();
-25 
+25
 26 // Or with PDO:
 27 $stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
 28 $stmt->execute(['id' => $_GET['id']]);
@@ -197,7 +197,7 @@ Original Code
 17 // Another SQL Injection vulnerability
 18 $searchTerm = $_POST['search'];
 19 $result = $conn->query("SELECT * FROM products WHERE name LIKE '%" . $searchTerm . "%'");  // SQL Injection
-20 
+20
 21 // XSS vulnerability
 22 $username = $_GET['username'];
 **Suggested Fix:**
@@ -225,18 +225,18 @@ $result = $stmt->fetchAll();
 
 Suggested Fix
 17 Use prepared statements instead of directly including variables in queries:
-18 
+18
 19 ```php
 20 // Instead of:
 21 $query = "SELECT * FROM users WHERE id = " . $_GET['id'];
 22 $result = $mysqli->query($query);
-23 
+23
 24 // Use:
 25 $stmt = $mysqli->prepare("SELECT * FROM users WHERE id = ?");
 26 $stmt->bind_param("i", $_GET['id']);
 27 $stmt->execute();
 28 $result = $stmt->get_result();
-29 
+29
 30 // Or with PDO:
 31 $stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
 32 $stmt->execute(['id' => $_GET['id']]);
@@ -266,7 +266,7 @@ Original Code
 25 // Command injection vulnerability
 26 $command = $_GET['cmd'];
 27 system("ls " . $command);  // Command injection
-28 
+28
 29 // File inclusion vulnerability
 30 $page = $_GET['page'];
 **Suggested Fix:**
@@ -293,11 +293,11 @@ system("ls " . escapeshellarg($_GET['dir']));
 
 Suggested Fix
 25 Avoid using user input in command execution. If necessary, validate and sanitize the input:
-26 
+26
 27 ```php
 28 // Instead of:
 29 system("ls " . $_GET['dir']);
-30 
+30
 31 // Use a whitelist approach:
 32 $allowed_dirs = ['home', 'tmp', 'var'];
 33 if (in_array($_GET['dir'], $allowed_dirs)) {
@@ -305,7 +305,7 @@ Suggested Fix
 35 } else {
 36     echo "Invalid directory";
 37 }
-38 
+38
 39 // Or use escapeshellarg to escape arguments:
 40 system("ls " . escapeshellarg($_GET['dir']));
 41 ```
@@ -332,7 +332,7 @@ Fix for PHP-Hardcoded-Credentials in .\samples\php\vulnerable_php.php:5
 Original Code
 5 // Hardcoded credentials vulnerability
 6 $password = "hardcoded_password";
-7 
+7
 8 // Database connection
 9 $conn = mysqli_connect("localhost", "root", $password, "mydb");
 **Suggested Fix:**
@@ -358,18 +358,18 @@ $password = env('APP_PASSWORD');
 
 Suggested Fix
 5 Use environment variables or a secure configuration system:
-6 
+6
 7 ```php
 8 // Instead of:
 9 $password = "hardcoded_password";
-10 
+10
 11 // Use environment variables:
 12 $password = getenv('APP_PASSWORD');
-13 
+13
 14 // Or use a configuration file that is not checked into version control:
 15 $config = parse_ini_file('/path/to/secure/config.ini');
 16 $password = $config['app_password'];
-17 
+17
 18 // Or in modern frameworks like Laravel, use the .env file:
 19 $password = env('APP_PASSWORD');
 20 ```
@@ -408,7 +408,7 @@ Suggested Fix
 ```
 448         }
 449         response = requests.get(url, headers=headers, timeout=10, verify=False)
-450 
+450
 
 ```
 
@@ -500,7 +500,7 @@ Suggested Fix
 ```
 9 def run_command(user_input):
 10     os.system("echo " + user_input)  # Vulnerable to command injection
-11 
+11
 
 ```
 
@@ -565,21 +565,21 @@ ActiveRecord::Base.connection.execute(
 
 Suggested Fix
 14 Use parameterized queries instead of string interpolation:
-15 
+15
 16 ```ruby
 17 # Instead of:
 18 User.where("name = '#{params[:name]}'")
-19 
+19
 20 # Use:
 21 User.where("name = ?", params[:name])
-22 
+22
 23 # Or with named parameters:
 24 User.where("name = :name", name: params[:name])
-25 
+25
 26 # For raw SQL:
 27 # Instead of:
 28 ActiveRecord::Base.connection.execute("SELECT * FROM users WHERE name = '#{params[:name]}'")
-29 
+29
 30 # Use:
 31 ActiveRecord::Base.connection.execute(
 32   ActiveRecord::Base.sanitize_sql_array(["SELECT * FROM users WHERE name = ?", params[:name]])
@@ -639,21 +639,21 @@ ActiveRecord::Base.connection.execute(
 
 Suggested Fix
 22 Use parameterized queries instead of string interpolation:
-23 
+23
 24 ```ruby
 25 # Instead of:
 26 User.where("name = '#{params[:name]}'")
-27 
+27
 28 # Use:
 29 User.where("name = ?", params[:name])
-30 
+30
 31 # Or with named parameters:
 32 User.where("name = :name", name: params[:name])
-33 
+33
 34 # For raw SQL:
 35 # Instead of:
 36 ActiveRecord::Base.connection.execute("SELECT * FROM users WHERE name = '#{params[:name]}'")
-37 
+37
 38 # Use:
 39 ActiveRecord::Base.connection.execute(
 40   ActiveRecord::Base.sanitize_sql_array(["SELECT * FROM users WHERE name = ?", params[:name]])
@@ -684,7 +684,7 @@ Original Code
 37   name = params[:name]
 38   "<h1>Welcome, #{name}!</h1>".html_safe  # XSS vulnerability
 39 end
-40 
+40
 41 # File access vulnerability
 **Suggested Fix:**
 
@@ -708,17 +708,17 @@ Avoid using html_safe or raw without proper sanitization:
 
 Suggested Fix
 36 Avoid using html_safe or raw without proper sanitization:
-37 
+37
 38 ```ruby
 39 # Instead of:
 40 <%= user_input.html_safe %>
-41 
+41
 42 # Use:
 43 <%= sanitize(user_input) %>
-44 
+44
 45 # Or use the built-in Rails helpers:
 46 <%= h(user_input) %>
-47 
+47
 48 # For specific HTML elements, use the tag helpers:
 49 <%= content_tag(:div, user_input) %>
 50 ```
@@ -773,11 +773,11 @@ system("ls #{Shellwords.escape(params[:directory])}")
 
 Suggested Fix
 29 Avoid using user input in command execution. If necessary, validate and sanitize the input:
-30 
+30
 31 ```ruby
 32 # Instead of:
 33 system("ls #{params[:directory]}")
-34 
+34
 35 # Use a whitelist approach:
 36 allowed_dirs = ['home', 'tmp', 'var']
 37 if allowed_dirs.include?(params[:directory])
@@ -785,7 +785,7 @@ Suggested Fix
 39 else
 40   # Handle error
 41 end
-42 
+42
 43 # Or use Shellwords to escape arguments:
 44 require 'shellwords'
 45 system("ls #{Shellwords.escape(params[:directory])}")
@@ -841,11 +841,11 @@ system("ls #{Shellwords.escape(params[:directory])}")
 
 Suggested Fix
 29 Avoid using user input in command execution. If necessary, validate and sanitize the input:
-30 
+30
 31 ```ruby
 32 # Instead of:
 33 system("ls #{params[:directory]}")
-34 
+34
 35 # Use a whitelist approach:
 36 allowed_dirs = ['home', 'tmp', 'var']
 37 if allowed_dirs.include?(params[:directory])
@@ -853,7 +853,7 @@ Suggested Fix
 39 else
 40   # Handle error
 41 end
-42 
+42
 43 # Or use Shellwords to escape arguments:
 44 require 'shellwords'
 45 system("ls #{Shellwords.escape(params[:directory])}")
@@ -910,17 +910,17 @@ end
 
 Suggested Fix
 42 Validate and sanitize file paths:
-43 
+43
 44 ```ruby
 45 # Instead of:
 46 File.read("#{params[:filename]}")
-47 
+47
 48 # Use:
 49 # Ensure the file is in a safe directory
 50 safe_dir = Rails.root.join('public', 'files')
 51 filename = File.basename(params[:filename])
 52 path = File.join(safe_dir, filename)
-53 
+53
 54 # Check that the resolved path is within the safe directory
 55 if path.start_with?(safe_dir.to_s) && File.exist?(path)
 56   content = File.read(path)
@@ -981,7 +981,7 @@ connection.query("SELECT * FROM users WHERE id = ?", [userId], (err, result) => 
 
 Suggested Fix
 28 Use parameterized queries instead of string concatenation:
-29 
+29
 30 For object-based queries:
 31 ```javascript
 32 let query = {
@@ -992,7 +992,7 @@ Suggested Fix
 37     res.json(result);
 38 });
 39 ```
-40 
+40
 41 For string-based queries:
 42 ```javascript
 43 connection.query("SELECT * FROM users WHERE id = ?", [userId], (err, result) => {
@@ -1052,7 +1052,7 @@ connection.query("SELECT * FROM users WHERE id = ?", [userId], (err, result) => 
 
 Suggested Fix
 35 Use parameterized queries instead of string concatenation:
-36 
+36
 37 For object-based queries:
 38 ```javascript
 39 let query = {
@@ -1063,7 +1063,7 @@ Suggested Fix
 44     res.json(result);
 45 });
 46 ```
-47 
+47
 48 For string-based queries:
 49 ```javascript
 50 connection.query("SELECT * FROM users WHERE id = ?", [userId], (err, result) => {
@@ -1123,7 +1123,7 @@ connection.query("SELECT * FROM users WHERE id = ?", [userId], (err, result) => 
 
 Suggested Fix
 31 Use parameterized queries instead of string concatenation:
-32 
+32
 33 For object-based queries:
 34 ```javascript
 35 let query = {
@@ -1134,7 +1134,7 @@ Suggested Fix
 40     res.json(result);
 41 });
 42 ```
-43 
+43
 44 For string-based queries:
 45 ```javascript
 46 connection.query("SELECT * FROM users WHERE id = ?", [userId], (err, result) => {
@@ -1166,7 +1166,7 @@ Original Code
 40   const username = req.query.username;
 41   res.send(`<h1>Welcome, ${username}!</h1>`);  // XSS vulnerability
 42 });
-43 
+43
 44 // Eval vulnerability
 **Suggested Fix:**
 
@@ -1185,12 +1185,12 @@ element.textContent = userInput; // Use textContent instead of innerHTML
 
 Suggested Fix
 39 Sanitize user input before rendering it as HTML:
-40 
+40
 41 ```javascript
 42 const sanitizeHtml = require('sanitize-html');
 43 // For Express.js
 44 res.send(sanitizeHtml(userInput));
-45 
+45
 46 // For DOM manipulation
 47 element.textContent = userInput; // Use textContent instead of innerHTML
 48 ```
@@ -1219,7 +1219,7 @@ Original Code
 47   const result = eval(expression);  // Eval vulnerability
 48   res.send(`Result: ${result}`);
 49 });
-50 
+50
 51 module.exports = router;
 **Suggested Fix:**
 
@@ -1238,12 +1238,12 @@ element.textContent = userInput; // Use textContent instead of innerHTML
 
 Suggested Fix
 46 Sanitize user input before rendering it as HTML:
-47 
+47
 48 ```javascript
 49 const sanitizeHtml = require('sanitize-html');
 50 // For Express.js
 51 res.send(sanitizeHtml(userInput));
-52 
+52
 53 // For DOM manipulation
 54 element.textContent = userInput; // Use textContent instead of innerHTML
 55 ```
@@ -1289,11 +1289,11 @@ setTimeout(functionName, 1000);
 
 Suggested Fix
 45 Avoid using eval() and similar functions. Use safer alternatives:
-46 
+46
 47 ```javascript
 48 // Instead of eval(jsonString)
 49 const data = JSON.parse(jsonString);
-50 
+50
 51 // Instead of setTimeout("functionName()", 1000)
 52 setTimeout(functionName, 1000);
 53 ```
@@ -1320,7 +1320,7 @@ Fix for GO-Hardcoded-Credentials in .\samples\go\vulnerable_go.go:18
 Original Code
 18 // Hardcoded credentials vulnerability
 19 const password = "hardcoded_password"
-20 
+20
 21 func main() {
 22 	// Insecure random number generator
 **Suggested Fix:**
@@ -1358,31 +1358,31 @@ password := viper.GetString("app.password")
 
 Suggested Fix
 18 Use environment variables or a secure configuration system:
-19 
+19
 20 ```go
 21 import (
 22     "os"
 23     "github.com/joho/godotenv"
 24 )
-25 
+25
 26 // Instead of:
 27 password := "hardcoded_password"
-28 
+28
 29 // Use environment variables:
 30 // Load .env file if it exists
 31 godotenv.Load()
 32 password := os.Getenv("APP_PASSWORD")
-33 
+33
 34 // Or use a configuration package like Viper:
 35 import "github.com/spf13/viper"
-36 
+36
 37 func init() {
 38     viper.SetConfigName("config")
 39     viper.SetConfigType("yaml")
 40     viper.AddConfigPath(".")
 41     viper.ReadInConfig()
 42 }
-43 
+43
 44 password := viper.GetString("app.password")
 45 ```
 ---
@@ -1399,7 +1399,7 @@ Suggested Fix
 	// XSS vulnerability
 	tmpl := fmt.Sprintf("<h1>Hello, %s!</h1>", name)
 	unsafeTemplate := template.HTML(tmpl)
-	
+
 	t, _ := template.New("page").Parse(`{{.}}`)
 	t.Execute(w, unsafeTemplate)
 ```
@@ -1409,7 +1409,7 @@ Original Code
 114 // XSS vulnerability
 115 	tmpl := fmt.Sprintf("<h1>Hello, %s!</h1>", name)
 116 	unsafeTemplate := template.HTML(tmpl)
-117 	
+117
 118 	t, _ := template.New("page").Parse(`{{.}}`)
 119 	t.Execute(w, unsafeTemplate)
 **Suggested Fix:**
@@ -1436,18 +1436,18 @@ safeHTML := template.HTML(sanitized)
 
 Suggested Fix
 114 Avoid using template.HTML, template.JS, or template.CSS with untrusted input:
-115 
+115
 116 ```go
 117 // Instead of:
 118 template.HTML(userInput)
-119 
+119
 120 // Use the default template escaping:
 121 // In your template:
 122 {{ .UserInput }}  // This is automatically escaped
-123 
+123
 124 // If you must use template.HTML, sanitize the input first:
 125 import "github.com/microcosm-cc/bluemonday"
-126 
+126
 127 p := bluemonday.UGCPolicy()  // Use a policy appropriate for your use case
 128 sanitized := p.Sanitize(userInput)
 129 safeHTML := template.HTML(sanitized)
@@ -1467,7 +1467,7 @@ Suggested Fix
             String fileName = args[1];
             File file = new File("data/" + fileName);  // Path traversal
             FileInputStream fis = new FileInputStream(file);
-            
+
             // Command injection vulnerability
 ```
 
@@ -1477,7 +1477,7 @@ Original Code
 34             String fileName = args[1];
 35             File file = new File("data/" + fileName);  // Path traversal
 36             FileInputStream fis = new FileInputStream(file);
-37             
+37
 38             // Command injection vulnerability
 **Suggested Fix:**
 
@@ -1504,15 +1504,15 @@ File file = resolvedPath.toFile();
 
 Suggested Fix
 33 Validate and sanitize file paths:
-34 
+34
 35 ```java
 36 // Import necessary classes
 37 import java.nio.file.Path;
 38 import java.nio.file.Paths;
-39 
+39
 40 // Instead of:
 41 File file = new File(basePath + userInput);
-42 
+42
 43 // Use:
 44 Path path = Paths.get(basePath).normalize();
 45 Path resolvedPath = path.resolve(userInput).normalize();
@@ -1535,7 +1535,7 @@ Suggested Fix
             // Command injection vulnerability
             String command = args[2];
             Runtime.getRuntime().exec("cmd.exe /c " + command);  // Command injection
-            
+
         } catch (Exception e) {
             e.printStackTrace();
 ```
@@ -1545,7 +1545,7 @@ Original Code
 38 // Command injection vulnerability
 39             String command = args[2];
 40             Runtime.getRuntime().exec("cmd.exe /c " + command);  // Command injection
-41             
+41
 42         } catch (Exception e) {
 43             e.printStackTrace();
 **Suggested Fix:**
@@ -1568,11 +1568,11 @@ Runtime.getRuntime().exec(userInput);
 
 Suggested Fix
 38 Avoid using user input in command execution. If necessary, validate and sanitize the input:
-39 
+39
 40 ```java
 41 // Instead of:
 42 Runtime.getRuntime().exec("cmd.exe /c " + userInput);
-43 
+43
 44 // Use a whitelist approach:
 45 List<String> allowedCommands = Arrays.asList("ls", "dir", "echo");
 46 if (!allowedCommands.contains(userInput)) {
@@ -1642,25 +1642,25 @@ if (move_uploaded_file($_FILES['file']['tmp_name'], $upload_path)) {
 
 Suggested Fix
 33 Validate file uploads properly:
-34 
+34
 35 ```php
 36 // Check file type
 37 $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
 38 if (!in_array($_FILES['file']['type'], $allowed_types)) {
 39     die("Invalid file type");
 40 }
-41 
+41
 42 // Check file extension
 43 $extension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
 44 $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif'];
 45 if (!in_array(strtolower($extension), $allowed_extensions)) {
 46     die("Invalid file extension");
 47 }
-48 
+48
 49 // Use a secure filename
 50 $new_filename = md5(time() . $_FILES['file']['name']) . '.' . $extension;
 51 $upload_path = '/path/to/secure/directory/' . $new_filename;
-52 
+52
 53 // Move the file
 54 if (move_uploaded_file($_FILES['file']['tmp_name'], $upload_path)) {
 55     echo "File uploaded successfully";
@@ -1693,7 +1693,7 @@ Original Code
 35     $filename = $_FILES['file']['name'];
 36     move_uploaded_file($_FILES['file']['tmp_name'], "uploads/" . $filename);  // Insecure file upload
 37 }
-38 
+38
 39 // Unvalidated redirect
 **Suggested Fix:**
 
@@ -1729,25 +1729,25 @@ if (move_uploaded_file($_FILES['file']['tmp_name'], $upload_path)) {
 
 Suggested Fix
 34 Validate file uploads properly:
-35 
+35
 36 ```php
 37 // Check file type
 38 $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
 39 if (!in_array($_FILES['file']['type'], $allowed_types)) {
 40     die("Invalid file type");
 41 }
-42 
+42
 43 // Check file extension
 44 $extension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
 45 $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif'];
 46 if (!in_array(strtolower($extension), $allowed_extensions)) {
 47     die("Invalid file extension");
 48 }
-49 
+49
 50 // Use a secure filename
 51 $new_filename = md5(time() . $_FILES['file']['name']) . '.' . $extension;
 52 $upload_path = '/path/to/secure/directory/' . $new_filename;
-53 
+53
 54 // Move the file
 55 if (move_uploaded_file($_FILES['file']['tmp_name'], $upload_path)) {
 56     echo "File uploaded successfully";
@@ -1945,7 +1945,7 @@ Suggested Fix
 213                 f"{self.zap_api_url}/core/action/shutdown",
 214                 params={"apikey": self.api_key}
 215             )
-216 
+216
 
 ```
 
@@ -2198,7 +2198,7 @@ Suggested Fix
 ```
 15     """Run the web application."""
 16     app.run(debug=True, host='0.0.0.0', port=5000)
-17 
+17
 
 ```
 
@@ -2294,7 +2294,7 @@ Suggested Fix
 ```
 14     with open(filename, 'rb') as f:
 15         return pickle.load(f)  # Vulnerable to unsafe deserialization
-16 
+16
 
 ```
 
@@ -2318,7 +2318,7 @@ Suggested Fix
 ```
 19     with open(filename, 'r') as f:
 20         return yaml.load(f)  # Vulnerable to YAML deserialization attacks
-21 
+21
 
 ```
 
@@ -2366,7 +2366,7 @@ Suggested Fix
 ```
 16     # Vulnerable SQL query - using string concatenation
 17     query = "SELECT * FROM users WHERE id = " + user_id
-18     
+18
 
 ```
 
@@ -2424,13 +2424,13 @@ end
 
 Suggested Fix
 48 Use strong parameters to whitelist attributes:
-49 
+49
 50 ```ruby
 51 # In your controller:
 52 def user_params
 53   params.require(:user).permit(:name, :email, :age)
 54 end
-55 
+55
 56 # Then use it:
 57 @user.update(user_params)
 58 # or
@@ -2460,7 +2460,7 @@ Original Code
 22 func main() {
 23 	// Insecure random number generator
 24 	randomValue := rand.Intn(100)  // Insecure random
-25 
+25
 26 	// Database connection
 27 	db, err := sql.Open("mysql", fmt.Sprintf("root:%s@tcp(localhost:3306)/mydb", password))
 **Suggested Fix:**
@@ -2490,16 +2490,16 @@ randomNumber := n.Int64()
 
 Suggested Fix
 22 Use a cryptographically secure random number generator:
-23 
+23
 24 ```go
 25 import (
 26     "crypto/rand"
 27     "math/big"
 28 )
-29 
+29
 30 // Instead of:
 31 n := rand.Intn(100)
-32 
+32
 33 // Use:
 34 // Generate a random number between 0 and 99
 35 max := big.NewInt(100)
@@ -2524,7 +2524,7 @@ Suggested Fix
             // Insecure random number generator
             Random random = new Random();  // Insecure random
             int randomValue = random.nextInt();
-            
+
             // Connect to database
 ```
 
@@ -2534,7 +2534,7 @@ Original Code
 20             // Insecure random number generator
 21             Random random = new Random();  // Insecure random
 22             int randomValue = random.nextInt();
-23             
+23
 24             // Connect to database
 **Suggested Fix:**
 
@@ -2557,15 +2557,15 @@ int value = secureRandom.nextInt();
 
 Suggested Fix
 19 Use a secure random number generator:
-20 
+20
 21 ```java
 22 // Import necessary classes
 23 import java.security.SecureRandom;
-24 
+24
 25 // Instead of:
 26 Random random = new Random();
 27 int value = random.nextInt();
-28 
+28
 29 // Use:
 30 SecureRandom secureRandom = new SecureRandom();
 31 int value = secureRandom.nextInt();
@@ -2612,7 +2612,7 @@ Suggested Fix
 96                 ["git", "clone", clone_url, local_path],
 97                 stderr=subprocess.STDOUT
 98             )
-99 
+99
 
 ```
 
@@ -2642,7 +2642,7 @@ Suggested Fix
 96                 ["git", "clone", clone_url, local_path],
 97                 stderr=subprocess.STDOUT
 98             )
-99 
+99
 
 ```
 
@@ -2813,7 +2813,7 @@ Suggested Fix
 ```
 110                 subprocess.check_call(["git", "config", "user.name", "CodeScanAI"])
 111                 subprocess.check_call(["git", "config", "user.email", "codescanai@example.com"])
-112 
+112
 
 ```
 
@@ -2837,7 +2837,7 @@ Suggested Fix
 ```
 110                 subprocess.check_call(["git", "config", "user.name", "CodeScanAI"])
 111                 subprocess.check_call(["git", "config", "user.email", "codescanai@example.com"])
-112 
+112
 
 ```
 
@@ -2861,7 +2861,7 @@ Suggested Fix
 ```
 113             # Configure Git to use the token for authentication
 114             subprocess.check_call(["git", "config", "http.https://github.com/.extraheader", f"AUTHORIZATION: basic {self.token}"])
-115 
+115
 
 ```
 
@@ -2885,7 +2885,7 @@ Suggested Fix
 ```
 113             # Configure Git to use the token for authentication
 114             subprocess.check_call(["git", "config", "http.https://github.com/.extraheader", f"AUTHORIZATION: basic {self.token}"])
-115 
+115
 
 ```
 
@@ -2933,7 +2933,7 @@ Suggested Fix
 ```
 60             # Create a new branch
 61             subprocess.check_call(["git", "checkout", "-b", branch_name])
-62 
+62
 
 ```
 
@@ -2957,7 +2957,7 @@ Suggested Fix
 ```
 60             # Create a new branch
 61             subprocess.check_call(["git", "checkout", "-b", branch_name])
-62 
+62
 
 ```
 
@@ -3077,7 +3077,7 @@ Suggested Fix
 ```
 257                 # Add all changes
 258                 subprocess.check_call(["git", "add", "."])
-259 
+259
 
 ```
 
@@ -3101,7 +3101,7 @@ Suggested Fix
 ```
 257                 # Add all changes
 258                 subprocess.check_call(["git", "add", "."])
-259 
+259
 
 ```
 
@@ -3125,7 +3125,7 @@ Suggested Fix
 ```
 260                 # Commit the changes
 261                 subprocess.check_call(["git", "commit", "-m", message])
-262 
+262
 
 ```
 
@@ -3149,7 +3149,7 @@ Suggested Fix
 ```
 260                 # Commit the changes
 261                 subprocess.check_call(["git", "commit", "-m", message])
-262 
+262
 
 ```
 
@@ -3317,7 +3317,7 @@ Suggested Fix
 ```
 299                 subprocess.check_call(["git", "config", "user.name", "CodeScanAI"])
 300                 subprocess.check_call(["git", "config", "user.email", "codescanai@example.com"])
-301 
+301
 
 ```
 
@@ -3341,7 +3341,7 @@ Suggested Fix
 ```
 299                 subprocess.check_call(["git", "config", "user.name", "CodeScanAI"])
 300                 subprocess.check_call(["git", "config", "user.email", "codescanai@example.com"])
-301 
+301
 
 ```
 
@@ -3366,7 +3366,7 @@ Suggested Fix
 315                         base_branch = default_branch
 316                 except Exception:
 317                     pass
-318 
+318
 
 ```
 
@@ -3539,7 +3539,7 @@ Suggested Fix
 173                 stdout=subprocess.PIPE,
 174                 stderr=subprocess.PIPE
 175             )
-176 
+176
 
 ```
 
@@ -3639,7 +3639,7 @@ Suggested Fix
 ```
 93             cmd = ["npm", "audit", "--json"]
 94             result = subprocess.run(cmd, capture_output=True, text=True)
-95             
+95
 
 ```
 
@@ -3663,7 +3663,7 @@ Suggested Fix
 ```
 149             cmd = ["npm", "outdated", "--json"]
 150             result = subprocess.run(cmd, capture_output=True, text=True)
-151             
+151
 
 ```
 
@@ -3759,7 +3759,7 @@ Suggested Fix
 ```
 83                 # Initialize package.json
 84                 subprocess.check_call(["npm", "init", "-y"], stdout=subprocess.DEVNULL)
-85                 
+85
 
 ```
 
@@ -3783,7 +3783,7 @@ Suggested Fix
 ```
 83                 # Initialize package.json
 84                 subprocess.check_call(["npm", "init", "-y"], stdout=subprocess.DEVNULL)
-85                 
+85
 
 ```
 
@@ -3810,7 +3810,7 @@ Suggested Fix
 88                     ["npm", "install", "eslint", "eslint-plugin-security", "--save-dev"],
 89                     stdout=subprocess.DEVNULL
 90                 )
-91                 
+91
 
 ```
 
@@ -3840,7 +3840,7 @@ Suggested Fix
 88                     ["npm", "install", "eslint", "eslint-plugin-security", "--save-dev"],
 89                     stdout=subprocess.DEVNULL
 90                 )
-91                 
+91
 
 ```
 
@@ -3865,15 +3865,15 @@ Suggested Fix
 **Vulnerable Code:**
 
 ```
-156             
+156
 157             result = subprocess.run(cmd, capture_output=True, text=True)
-158             
+158
 
 ```
 
 Fix for BANDIT-B603 in core\scanners\javascript_scanner.py:157
 Original Code
-157 156             
+157 156
 158 157             result = subprocess.run(cmd, capture_output=True, text=True)
 159 158
 Suggested Fix
@@ -3964,7 +3964,7 @@ Suggested Fix
 1340                                 k8s_files.append(file_path)
 1341                     except Exception:
 1342                         pass
-1343 
+1343
 
 ```
 
@@ -3990,7 +3990,7 @@ Suggested Fix
 1405                                 shell_files.append(file_path)
 1406                     except Exception:
 1407                         pass
-1408 
+1408
 
 ```
 
@@ -4040,7 +4040,7 @@ Suggested Fix
 805                     return child.text.strip()
 806             except Exception:
 807                 pass
-808 
+808
 
 ```
 
@@ -4065,7 +4065,7 @@ Suggested Fix
 ```
 8 import os
 9 import subprocess
-10 
+10
 
 ```
 
@@ -4221,7 +4221,7 @@ Suggested Fix
 ```
 32         repo_url_with_token = repo_url.replace("https://", f"https://{token}@")
 33         subprocess.check_call(["git", "clone", repo_url_with_token, temp_dir])
-34         
+34
 
 ```
 
@@ -4245,7 +4245,7 @@ Suggested Fix
 ```
 32         repo_url_with_token = repo_url.replace("https://", f"https://{token}@")
 33         subprocess.check_call(["git", "clone", repo_url_with_token, temp_dir])
-34         
+34
 
 ```
 
@@ -4269,7 +4269,7 @@ Suggested Fix
 ```
 42         print(f"Creating branch {branch_name}...")
 43         subprocess.check_call(["git", "checkout", "-b", branch_name])
-44         
+44
 
 ```
 
@@ -4293,7 +4293,7 @@ Suggested Fix
 ```
 42         print(f"Creating branch {branch_name}...")
 43         subprocess.check_call(["git", "checkout", "-b", branch_name])
-44         
+44
 
 ```
 
@@ -4413,7 +4413,7 @@ Suggested Fix
 ```
 73         subprocess.check_call(["git", "add", "."])
 74         subprocess.check_call(["git", "commit", "-m", "Fix security vulnerabilities"])
-75         
+75
 
 ```
 
@@ -4437,7 +4437,7 @@ Suggested Fix
 ```
 73         subprocess.check_call(["git", "add", "."])
 74         subprocess.check_call(["git", "commit", "-m", "Fix security vulnerabilities"])
-75         
+75
 
 ```
 
@@ -4461,7 +4461,7 @@ Suggested Fix
 ```
 77         print(f"Pushing changes to branch {branch_name}...")
 78         subprocess.check_call(["git", "push", "-u", "origin", branch_name])
-79         
+79
 
 ```
 
@@ -4485,7 +4485,7 @@ Suggested Fix
 ```
 77         print(f"Pushing changes to branch {branch_name}...")
 78         subprocess.check_call(["git", "push", "-u", "origin", branch_name])
-79         
+79
 
 ```
 
@@ -4581,7 +4581,7 @@ Suggested Fix
 ```
 15 app = Flask(__name__, template_folder='codescanai/web/templates', static_folder='codescanai/web/static')
 16 app.config['SECRET_KEY'] = 'your-secret-key'
-17 
+17
 
 ```
 
@@ -4653,7 +4653,7 @@ Suggested Fix
 ```
 13 # Hardcoded credentials vulnerability
 14 PASSWORD = "hardcoded_password"
-15 
+15
 
 ```
 
