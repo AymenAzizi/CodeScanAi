@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}CodeScanAI - Home{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Welcome to CodeScanAI</h1>
+    <p class="lead">
+        CodeScanAI utilizes advanced AI models to scan your codebase for security vulnerabilities and bad development practices.
+        Our platform detects issues, generates fixes, validates them, and creates pull requests automatically.
+    </p>
+    <hr class="my-4">
+    <p>Get started by scanning your code or connecting to GitHub.</p>
+    <div class="d-flex gap-3">
+        <a class="btn btn-primary btn-lg" href="{{ url_for('scan') }}" role="button">
+            <i class="fas fa-search mr-2"></i> Scan Code
+        </a>
+        <a class="btn btn-secondary btn-lg" href="{{ url_for('github') }}" role="button">
+            <i class="fab fa-github mr-2"></i> Connect to GitHub
+        </a>
+    </div>
+</div>
+
+<h2 class="mt-5 mb-4">Key Features</h2>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body feature-card">
+                <div class="icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>SAST/SCA Integration</h3>
+                <p>Integrates with industry-standard security scanners to detect vulnerabilities across multiple programming languages.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body feature-card">
+                <div class="icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3>AI-Powered Fix Generation</h3>
+                <p>Automatically generates fixes for detected vulnerabilities using advanced AI models, saving developers time and effort.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body feature-card">
+                <div class="icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3>Validation System</h3>
+                <p>Validates generated fixes through multiple methods including static analysis, test cases, and re-scanning to ensure vulnerabilities are resolved.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body feature-card">
+                <div class="icon">
+                    <i class="fas fa-code-branch"></i>
+                </div>
+                <h3>Auto-PR Creation</h3>
+                <p>Automatically creates pull requests with fixes for vulnerabilities, streamlining the remediation process.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body feature-card">
+                <div class="icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Security Metrics Dashboard</h3>
+                <p>Tracks vulnerability metrics over time and shows fix success rates, providing insights into your security posture.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body feature-card">
+                <div class="icon">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <h3>CI/CD Integration</h3>
+                <p>Seamlessly integrates into GitHub Actions and other CI/CD pipelines for automated security scanning.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-5 mb-5 text-center">
+    <h2 class="mb-4">Ready to secure your code?</h2>
+    <a class="btn btn-primary btn-lg" href="{{ url_for('scan') }}" role="button">
+        <i class="fas fa-rocket mr-2"></i> Get Started Now
+    </a>
+</div>
+{% endblock %}

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAST Scan Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .vulnerability {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+        }
+        .vulnerability-high {
+            border-left: 5px solid #e74c3c;
+        }
+        .vulnerability-medium {
+            border-left: 5px solid #f39c12;
+        }
+        .vulnerability-low {
+            border-left: 5px solid #2ecc71;
+        }
+        .vulnerability-header {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .vulnerability-details {
+            margin-left: 15px;
+        }
+        .code-block {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin: 10px 0;
+        }
+        .fix-block {
+            background-color: #e8f4f8;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #3498db;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>DAST Scan Results</h1>
+    
+    <div class="vulnerability vulnerability-medium">
+        <div class="vulnerability-header">DAST-HEADER-StrictTransportSecurity</div>
+        <div class="vulnerability-details">
+            <p><strong>Severity:</strong> MEDIUM</p>
+            <p><strong>Confidence:</strong> MEDIUM</p>
+            <p><strong>Description:</strong> Missing HSTS header. This could expose the application to various attacks.</p>
+            <p><strong>URL:</strong> http://testphp.vulnweb.com/</p>
+            <div class="code-block">Response headers: {'Server': 'nginx/1.19.0', 'Date': 'Tue, 13 May 2025 10:19:39 GMT', 'Content-Type': 'text/html; charset=UTF-8', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'X-Powered-By': 'PHP/5.6.40-38+ubuntu20.04.1+deb.sury.org+1', 'Content-Encoding': 'gzip'}</div>
+            <div class="fix-block">Add the Strict-Transport-Security header to your HTTP responses.</div>
+        </div>
+    </div>
+
+    <div class="vulnerability vulnerability-medium">
+        <div class="vulnerability-header">DAST-HEADER-ContentSecurityPolicy</div>
+        <div class="vulnerability-details">
+            <p><strong>Severity:</strong> MEDIUM</p>
+            <p><strong>Confidence:</strong> MEDIUM</p>
+            <p><strong>Description:</strong> Missing Content-Security-Policy header. This could expose the application to various attacks.</p>
+            <p><strong>URL:</strong> http://testphp.vulnweb.com/</p>
+            <div class="code-block">Response headers: {'Server': 'nginx/1.19.0', 'Date': 'Tue, 13 May 2025 10:19:39 GMT', 'Content-Type': 'text/html; charset=UTF-8', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'X-Powered-By': 'PHP/5.6.40-38+ubuntu20.04.1+deb.sury.org+1', 'Content-Encoding': 'gzip'}</div>
+            <div class="fix-block">Add the Content-Security-Policy header to your HTTP responses.</div>
+        </div>
+    </div>
+
+    <div class="vulnerability vulnerability-medium">
+        <div class="vulnerability-header">DAST-HEADER-XContentTypeOptions</div>
+        <div class="vulnerability-details">
+            <p><strong>Severity:</strong> MEDIUM</p>
+            <p><strong>Confidence:</strong> MEDIUM</p>
+            <p><strong>Description:</strong> Missing X-Content-Type-Options header. This could expose the application to various attacks.</p>
+            <p><strong>URL:</strong> http://testphp.vulnweb.com/</p>
+            <div class="code-block">Response headers: {'Server': 'nginx/1.19.0', 'Date': 'Tue, 13 May 2025 10:19:39 GMT', 'Content-Type': 'text/html; charset=UTF-8', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'X-Powered-By': 'PHP/5.6.40-38+ubuntu20.04.1+deb.sury.org+1', 'Content-Encoding': 'gzip'}</div>
+            <div class="fix-block">Add the X-Content-Type-Options header to your HTTP responses.</div>
+        </div>
+    </div>
+
+    <div class="vulnerability vulnerability-medium">
+        <div class="vulnerability-header">DAST-HEADER-XFrameOptions</div>
+        <div class="vulnerability-details">
+            <p><strong>Severity:</strong> MEDIUM</p>
+            <p><strong>Confidence:</strong> MEDIUM</p>
+            <p><strong>Description:</strong> Missing X-Frame-Options header. This could expose the application to various attacks.</p>
+            <p><strong>URL:</strong> http://testphp.vulnweb.com/</p>
+            <div class="code-block">Response headers: {'Server': 'nginx/1.19.0', 'Date': 'Tue, 13 May 2025 10:19:39 GMT', 'Content-Type': 'text/html; charset=UTF-8', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'X-Powered-By': 'PHP/5.6.40-38+ubuntu20.04.1+deb.sury.org+1', 'Content-Encoding': 'gzip'}</div>
+            <div class="fix-block">Add the X-Frame-Options header to your HTTP responses.</div>
+        </div>
+    </div>
+
+    <div class="vulnerability vulnerability-medium">
+        <div class="vulnerability-header">DAST-HEADER-XXSSProtection</div>
+        <div class="vulnerability-details">
+            <p><strong>Severity:</strong> MEDIUM</p>
+            <p><strong>Confidence:</strong> MEDIUM</p>
+            <p><strong>Description:</strong> Missing X-XSS-Protection header. This could expose the application to various attacks.</p>
+            <p><strong>URL:</strong> http://testphp.vulnweb.com/</p>
+            <div class="code-block">Response headers: {'Server': 'nginx/1.19.0', 'Date': 'Tue, 13 May 2025 10:19:39 GMT', 'Content-Type': 'text/html; charset=UTF-8', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'X-Powered-By': 'PHP/5.6.40-38+ubuntu20.04.1+deb.sury.org+1', 'Content-Encoding': 'gzip'}</div>
+            <div class="fix-block">Add the X-XSS-Protection header to your HTTP responses.</div>
+        </div>
+    </div>
+
+    <div class="vulnerability vulnerability-high">
+        <div class="vulnerability-header">DAST-HTTP-INSECURE</div>
+        <div class="vulnerability-details">
+            <p><strong>Severity:</strong> HIGH</p>
+            <p><strong>Confidence:</strong> HIGH</p>
+            <p><strong>Description:</strong> The application uses HTTP instead of HTTPS. This means that all data transmitted between the client and server is sent in plaintext and can be intercepted.</p>
+            <p><strong>URL:</strong> http://testphp.vulnweb.com/</p>
+            <div class="code-block">http://testphp.vulnweb.com/</div>
+            <div class="fix-block">Configure the application to use HTTPS instead of HTTP.</div>
+        </div>
+    </div>
+
+    <div class="vulnerability vulnerability-medium">
+        <div class="vulnerability-header">DAST-SENSITIVE-EMAIL</div>
+        <div class="vulnerability-details">
+            <p><strong>Severity:</strong> MEDIUM</p>
+            <p><strong>Confidence:</strong> MEDIUM</p>
+            <p><strong>Description:</strong> Email address found in the response</p>
+            <p><strong>URL:</strong> http://testphp.vulnweb.com/</p>
+            <div class="code-block">Found 1 instances of pattern \b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b</div>
+            <div class="fix-block">Ensure sensitive information is not exposed in responses.</div>
+        </div>
+    </div>
+</body>
+</html>
