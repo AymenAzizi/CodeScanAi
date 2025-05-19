@@ -5,7 +5,10 @@
 ![Version](https://img.shields.io/badge/version-1.0.0-brightgreen)
 
 <p align="center">
-  <img src="codescanai/web/static/img/logo.png" alt="CodeScanAI Logo" width="200"/>
+  <div align="center" style="background-color: #0d1b2a; padding: 20px; border-radius: 10px; display: inline-block;">
+    <h1 style="color: #4cc9f0; font-size: 48px; margin: 0;">CodeScanAI</h1>
+    <p style="color: #4895ef; font-size: 18px; margin: 5px 0 0 0;">Secure Code. Intelligent Analysis.</p>
+  </div>
 </p>
 
 CodeScanAI is a comprehensive security scanning platform that leverages AI to detect, analyze, and fix security vulnerabilities in your code. With support for multiple AI providers, advanced scanning techniques, and an intuitive interface, CodeScanAI helps developers build more secure applications with minimal effort.
@@ -141,7 +144,29 @@ python run_web.py
 
 Your browser will automatically open to `http://127.0.0.1:5000`
 
-![Web Interface](codescanai/web/static/img/screenshot.png)
+```
++---------------------------------------------+
+|                                             |
+|  CodeScanAI Web Interface                   |
+|                                             |
+|  +-------+  +-------+  +-------+  +-------+ |
+|  | Scan  |  | Fix   |  | GitHub |  | Dash  | |
+|  +-------+  +-------+  +-------+  +-------+ |
+|                                             |
+|  +-----------------------------------------+ |
+|  |                                         | |
+|  |  Security Scan Configuration            | |
+|  |                                         | |
+|  |  [ ] SAST  [ ] SCA  [ ] DAST            | |
+|  |                                         | |
+|  |  AI Provider: [OpenAI    ▼]             | |
+|  |                                         | |
+|  |  [        Start Scan        ]           | |
+|  |                                         | |
+|  +-----------------------------------------+ |
+|                                             |
++---------------------------------------------+
+```
 
 #### Command Line Interface
 
