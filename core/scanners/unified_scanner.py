@@ -51,6 +51,8 @@ SCANNER_MODULES = {
     'php': 'core.scanners.php_pattern_scanner',
     'ruby': 'core.scanners.ruby_pattern_scanner',
     'go': 'core.scanners.go_pattern_scanner',
+    'c': 'core.scanners.c_pattern_scanner',
+    'cpp': 'core.scanners.c_pattern_scanner',  # Use the same scanner for C++
     'xml': 'core.scanners.xml_scanner',
     'json': 'core.scanners.json_scanner',
     'text': 'core.scanners.text_scanner',
@@ -64,6 +66,8 @@ SCANNER_FUNCTIONS = {
     'php': 'scan_php_file',
     'ruby': 'scan_ruby_file',
     'go': 'scan_go_file',
+    'c': 'scan_c_file',
+    'cpp': 'scan_c_file',  # Use the same scanner function for C++
     'xml': 'scan_file',  # XML scanner works on individual files
     'json': 'scan_file',  # JSON scanner works on individual files
     'text': 'scan_file',  # Text scanner works on individual files
@@ -77,6 +81,8 @@ DIRECTORY_SCANNER_FUNCTIONS = {
     'php': 'scan_php_directory',
     'ruby': 'scan_ruby_directory',
     'go': 'scan_go_directory',
+    'c': 'scan_c_directory',
+    'cpp': 'scan_c_directory',  # Use the same directory scanner for C++
     'xml': 'scan_xml_files',  # XML scanner works on directories
     'json': 'scan_json_files',  # JSON scanner works on directories
     'text': 'scan_text_files',  # Text scanner works on directories

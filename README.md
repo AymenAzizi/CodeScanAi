@@ -140,6 +140,26 @@ To use the security features:
 python run_cli.py --provider huggingface --sast --fix --validate --directory path/to/your/code
 ```
 
+##### Running DAST Scans
+
+To perform a Dynamic Application Security Testing (DAST) scan on a web application:
+
+```bash
+python run_cli.py --provider huggingface --dast --target-url "https://example.com" --directory path/to/your/code
+```
+
+For a basic scan without using OWASP ZAP:
+
+```bash
+python run_cli.py --provider huggingface --dast --target-url "https://example.com" --use-basic-scanner --directory path/to/your/code
+```
+
+If you have OWASP ZAP installed, you can specify the path:
+
+```bash
+python run_cli.py --provider huggingface --dast --target-url "https://example.com" --zap-path "/path/to/zap" --directory path/to/your/code
+```
+
 ##### Scanning GitHub Repositories
 
 To scan a GitHub repository and create a pull request with fixes:

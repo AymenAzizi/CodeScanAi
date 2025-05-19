@@ -181,6 +181,156 @@ class BanditScanner(SASTScanner):
         return vulnerabilities
 
 
+class CustomScanner(SASTScanner):
+    """
+    Custom SAST scanner that uses pattern matching for various file types.
+    """
+
+    def __init__(self):
+        """
+        Initialize the custom scanner with patterns for different vulnerabilities.
+        """
+        self.patterns = {
+            # Hardcoded credentials
+            'hardcoded_credentials': [
+                r'password\s*=\s*["\'][^"\']+["\']',
+                r'api_key\s*=\s*["\'][^"\']+["\']',
+                r'secret\s*=\s*["\'][^"\']+["\']',
+                r'token\s*=\s*["\'][^"\']+["\']',
+                r'auth\s*=\s*["\'][^"\']+["\']',
+            ],
+            # SQL Injection
+            'sql_injection': [
+                r'execute\s*\(\s*["\'][^"\']*\s*\+',
+                r'query\s*\(\s*["\'][^"\']*\s*\+',
+                r'executeQuery\s*\(\s*["\'][^"\']*\s*\+',
+            ],
+            # Command Injection
+            'command_injection': [
+                r'exec\s*\(\s*["\'][^"\']*\s*\+',
+                r'spawn\s*\(\s*["\'][^"\']*\s*\+',
+                r'system\s*\(\s*["\'][^"\']*\s*\+',
+                r'popen\s*\(\s*["\'][^"\']*\s*\+',
+                r'subprocess\.call\s*\(\s*["\'][^"\']*\s*\+',
+                r'subprocess\.Popen\s*\(\s*["\'][^"\']*\s*\+',
+                r'os\.system\s*\(\s*["\'][^"\']*\s*\+',
+            ],
+            # XSS
+            'xss': [
+                r'innerHTML\s*=',
+                r'document\.write\s*\(',
+                r'\.html\s*\(',
+            ],
+            # Path Traversal
+            'path_traversal': [
+                r'open\s*\(\s*["\'][^"\']*\s*\+',
+                r'readFile\s*\(\s*["\'][^"\']*\s*\+',
+                r'fs\.readFile\s*\(\s*["\'][^"\']*\s*\+',
+            ],
+        }
+
+        # CWE mapping
+        self.cwe_mapping = {
+            'hardcoded_credentials': 'CWE-798',
+            'sql_injection': 'CWE-89',
+            'command_injection': 'CWE-78',
+            'xss': 'CWE-79',
+            'path_traversal': 'CWE-22',
+        }
+
+        # Description mapping
+        self.description_mapping = {
+            'hardcoded_credentials': 'Hardcoded credentials detected. This is a security risk as credentials should not be stored in code.',
+            'sql_injection': 'Potential SQL injection vulnerability detected. User input should be properly sanitized before being used in SQL queries.',
+            'command_injection': 'Potential command injection vulnerability detected. User input should be properly sanitized before being used in system commands.',
+            'xss': 'Potential cross-site scripting (XSS) vulnerability detected. User input should be properly sanitized before being used in HTML output.',
+            'path_traversal': 'Potential path traversal vulnerability detected. User input should be properly validated before being used in file operations.',
+        }
+
+    def scan_directory(self, directory: str) -> List[Vulnerability]:
+        """
+        Scan a directory for security vulnerabilities using pattern matching.
+
+        Args:
+            directory (str): Path to the directory to scan.
+
+        Returns:
+            List[Vulnerability]: List of found vulnerabilities.
+        """
+        import re
+        import os
+
+        vulnerabilities = []
+
+        # Walk through all files in the directory
+        for root, _, files in os.walk(directory):
+            for file in files:
+                # Skip binary files and certain directories
+                if self._should_skip_file(file, root):
+                    continue
+
+                file_path = os.path.join(root, file)
+                rel_path = os.path.relpath(file_path, directory)
+
+                try:
+                    # Read the file content
+                    with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                        content = f.read()
+
+                    # Check each pattern
+                    for vuln_type, patterns in self.patterns.items():
+                        for pattern in patterns:
+                            # Find all matches
+                            for match in re.finditer(pattern, content):
+                                # Get the line number
+                                line_number = content[:match.start()].count('\n') + 1
+
+                                # Get the line of code
+                                lines = content.split('\n')
+                                code = lines[line_number - 1] if line_number <= len(lines) else "Code not available"
+
+                                # Create a vulnerability
+                                vuln = Vulnerability(
+                                    id=f"CUSTOM-{vuln_type.upper()}",
+                                    severity="HIGH",
+                                    confidence="MEDIUM",
+                                    file_path=rel_path,
+                                    line_number=line_number,
+                                    description=self.description_mapping.get(vuln_type, f"Potential {vuln_type} vulnerability detected"),
+                                    code=code,
+                                    cwe=self.cwe_mapping.get(vuln_type, None)
+                                )
+                                vulnerabilities.append(vuln)
+                except Exception as e:
+                    logging.warning(f"Error scanning file {file_path}: {e}")
+
+        logging.info(f"Found {len(vulnerabilities)} vulnerabilities with custom scanner")
+        return vulnerabilities
+
+    def _should_skip_file(self, file: str, root: str) -> bool:
+        """
+        Check if a file should be skipped during scanning.
+
+        Args:
+            file (str): File name.
+            root (str): Directory containing the file.
+
+        Returns:
+            bool: True if the file should be skipped, False otherwise.
+        """
+        # Skip binary files
+        if file.endswith(('.jpg', '.jpeg', '.png', '.gif', '.pdf', '.zip', '.tar.gz', '.exe', '.dll', '.so', '.pyc')):
+            return True
+
+        # Skip certain directories
+        skip_dirs = ['node_modules', 'venv', '.git', '.idea', '__pycache__', 'dist', 'build']
+        for skip_dir in skip_dirs:
+            if skip_dir in root.split(os.path.sep):
+                return True
+
+        return False
+
+
 # Factory function to get the appropriate scanner based on file type
 def get_scanner_for_file_type(file_type: str) -> SASTScanner:
     """
@@ -196,8 +346,8 @@ def get_scanner_for_file_type(file_type: str) -> SASTScanner:
         return BanditScanner()
     # Add more scanners for other file types here
     else:
-        logging.warning(f"No specific scanner available for file type '{file_type}'. Using Bandit as fallback.")
-        return BanditScanner()
+        logging.info(f"Using custom scanner for file type '{file_type}'.")
+        return CustomScanner()
 
 
 # Function to scan a directory with the appropriate scanner based on file types
@@ -211,6 +361,24 @@ def scan_directory(directory: str) -> List[Vulnerability]:
     Returns:
         List[Vulnerability]: List of found vulnerabilities.
     """
-    # For now, we'll just use Bandit for all files
-    scanner = BanditScanner()
-    return scanner.scan_directory(directory)
+    # Use both Bandit and custom scanner
+    vulnerabilities = []
+
+    # Use Bandit for Python files
+    try:
+        bandit_scanner = BanditScanner()
+        bandit_vulnerabilities = bandit_scanner.scan_directory(directory)
+        vulnerabilities.extend(bandit_vulnerabilities)
+        logging.info(f"Found {len(bandit_vulnerabilities)} vulnerabilities with Bandit")
+    except Exception as e:
+        logging.error(f"Error running Bandit scanner: {e}")
+
+    # Use custom scanner for all files
+    try:
+        custom_scanner = CustomScanner()
+        custom_vulnerabilities = custom_scanner.scan_directory(directory)
+        vulnerabilities.extend(custom_vulnerabilities)
+    except Exception as e:
+        logging.error(f"Error running custom scanner: {e}")
+
+    return vulnerabilities

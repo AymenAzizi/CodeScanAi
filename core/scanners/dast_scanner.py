@@ -113,8 +113,19 @@ class DastScanner:
             logging.error("ZAP path not set. Cannot start ZAP.")
             return False
 
-        # Create a temporary directory for ZAP
-        self.temp_dir = tempfile.mkdtemp(prefix="zap_")
+        # Create a temporary directory for ZAP in a location that's likely to have write permissions
+        try:
+            # Try to create in system temp directory which usually has proper permissions
+            self.temp_dir = tempfile.mkdtemp(prefix="zap_")
+            logging.info(f"Created temporary directory for ZAP: {self.temp_dir}")
+        except PermissionError:
+            # If that fails, try the current directory
+            import random
+            import string
+            current_dir = os.path.abspath(os.path.curdir)
+            self.temp_dir = os.path.join(current_dir, "zap_temp_" + ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(8)))
+            os.makedirs(self.temp_dir, exist_ok=True)
+            logging.info(f"Created temporary directory for ZAP in current directory: {self.temp_dir}")
 
         # Determine the ZAP executable
         zap_executable = self.zap_path
@@ -400,18 +411,72 @@ def scan_url(url: str, zap_path: Optional[str] = None, api_key: Optional[str] = 
     Returns:
         List[Vulnerability]: List of found vulnerabilities.
     """
+    # Validate URL format
+    if not url:
+        logging.error("No URL provided for DAST scanning")
+        return []
+
+    # Ensure URL has a scheme
+    if not url.startswith(('http://', 'https://')):
+        logging.info(f"Adding https:// prefix to URL: {url}")
+        url = f"https://{url}"
+
+    logging.info(f"DAST scanning URL: {url}")
+
     # Use basic scanner if requested or if ZAP is not available
     if use_basic_scanner or not zap_path:
         logging.info("Using basic scanner instead of ZAP")
-        return basic_scan_url(url)
+        try:
+            return basic_scan_url(url)
+        except Exception as e:
+            logging.error(f"Error in basic scanner: {e}")
+            # Return a minimal vulnerability report instead of failing completely
+            return [Vulnerability(
+                id="DAST-SCAN-ERROR",
+                file_path=url,
+                line_number=0,
+                code="",
+                severity="INFO",
+                confidence="HIGH",
+                description=f"Error during DAST scan: {str(e)}",
+                fix_suggestion="Check the application URL and try again."
+            )]
 
     # Use ZAP scanner
     scanner = DastScanner(zap_path, api_key)
 
     # Start ZAP
-    if not scanner.start_zap():
-        logging.warning("Failed to start ZAP. Falling back to basic scanner.")
-        return basic_scan_url(url)
+    try:
+        if not scanner.start_zap():
+            logging.warning("Failed to start ZAP. Falling back to basic scanner.")
+            try:
+                return basic_scan_url(url)
+            except Exception as e:
+                logging.error(f"Error in basic scanner fallback: {e}")
+                # Return a minimal vulnerability report instead of failing completely
+                return [Vulnerability(
+                    id="DAST-SCAN-ERROR",
+                    file_path=url,
+                    line_number=0,
+                    code="",
+                    severity="INFO",
+                    confidence="HIGH",
+                    description=f"Error during DAST scan: {str(e)}",
+                    fix_suggestion="Check the application URL and try again."
+                )]
+    except Exception as e:
+        logging.error(f"Error starting ZAP: {e}")
+        # Return a minimal vulnerability report instead of failing completely
+        return [Vulnerability(
+            id="DAST-ZAP-ERROR",
+            file_path=url,
+            line_number=0,
+            code="",
+            severity="INFO",
+            confidence="HIGH",
+            description=f"Error starting ZAP: {str(e)}",
+            fix_suggestion="Check ZAP installation or use basic scanner."
+        )]
 
     try:
         # Perform the scan
@@ -446,7 +511,16 @@ def basic_scan_url(url: str) -> List[Vulnerability]:
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
         }
-        response = requests.get(url, headers=headers, timeout=10, verify=False)
+
+        # Add warning suppression for insecure requests
+        import urllib3
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+        # Log the request
+        logging.info(f"Sending GET request to {url}")
+
+        # Make the request with a longer timeout
+        response = requests.get(url, headers=headers, timeout=30, verify=False)
 
         # Check for HTTP security headers
         security_headers = {

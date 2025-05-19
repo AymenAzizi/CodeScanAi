@@ -27,7 +27,15 @@ def parse_arguments():
 
     # Scan options
     parser.add_argument("--sast", action="store_true", help="Run SAST scan")
+    parser.add_argument("--sca", action="store_true", help="Run SCA scan")
+    parser.add_argument("--dast", action="store_true", help="Run DAST scan")
     parser.add_argument("--changes-only", action="store_true", help="Only scan changed files")
+
+    # DAST options
+    parser.add_argument("--target-url", type=str, help="Target URL for DAST scanning")
+    parser.add_argument("--zap-path", type=str, help="Path to ZAP installation for DAST scanning")
+    parser.add_argument("--zap-api-key", type=str, help="API key for ZAP")
+    parser.add_argument("--use-basic-scanner", action="store_true", help="Use basic scanner instead of ZAP for DAST")
 
     # Fix options
     parser.add_argument("--fix", action="store_true", help="Generate fixes for vulnerabilities")
@@ -58,6 +66,21 @@ def parse_arguments():
 def main():
     """Main entry point for the CLI."""
     args = parse_arguments()
+
+    # Make sure environment variables are set for tokens
+    import os
+    import dotenv
+
+    # Load environment variables from .env file
+    dotenv.load_dotenv()
+
+    # Ensure Hugging Face token is available
+    if not os.environ.get("HUGGING_FACE_TOKEN") and not os.environ.get("HF_TOKEN"):
+        print("Warning: No Hugging Face token found in environment variables.")
+        print("SAST and SCA scanning may not work properly.")
+        print("Please set HUGGING_FACE_TOKEN or HF_TOKEN in your .env file.")
+    else:
+        print(f"Using Hugging Face token from environment variables.")
 
     # Run the security pipeline
     results = run_security_pipeline(args)

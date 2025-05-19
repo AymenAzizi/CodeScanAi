@@ -186,29 +186,36 @@ def run_security_pipeline(args) -> Dict[str, Union[None, str, List[Any], Dict[st
             results["dependency_scan"] = str(e)
 
     # Run DAST scan if requested
-    if hasattr(args, 'dast') and args.dast and hasattr(args, 'target_url') and args.target_url:
+    if hasattr(args, 'dast') and args.dast:
         logging.info("Running Dynamic Application Security Testing (DAST)...")
         try:
-            # Get ZAP path and API key
-            zap_path = getattr(args, 'zap_path', None)
-            zap_api_key = getattr(args, 'zap_api_key', None)
-            use_basic_scanner = getattr(args, 'use_basic_scanner', True)  # Default to basic scanner
+            # Get target URL
+            target_url = getattr(args, 'target_url', None)
 
-            # Run DAST scanner
-            logging.info(f"Scanning URL for vulnerabilities: {args.target_url}")
-            dast_vulnerabilities = scan_url(
-                args.target_url,
-                zap_path=zap_path,
-                api_key=zap_api_key,
-                use_basic_scanner=use_basic_scanner
-            )
-            vulnerabilities.extend(dast_vulnerabilities)
-            results["dast_scan"] = dast_vulnerabilities
+            if not target_url:
+                logging.error("No target URL provided for DAST scanning. Use --target-url parameter.")
+                results["dast_scan"] = "Error: No target URL provided for DAST scanning. Use --target-url parameter."
+            else:
+                # Get ZAP path and API key
+                zap_path = getattr(args, 'zap_path', None)
+                zap_api_key = getattr(args, 'zap_api_key', None)
+                use_basic_scanner = getattr(args, 'use_basic_scanner', True)  # Default to basic scanner
 
-            logging.info(f"Found {len(dast_vulnerabilities)} DAST vulnerabilities")
+                # Run DAST scanner
+                logging.info(f"Scanning URL for vulnerabilities: {target_url}")
+                dast_vulnerabilities = scan_url(
+                    target_url,
+                    zap_path=zap_path,
+                    api_key=zap_api_key,
+                    use_basic_scanner=use_basic_scanner
+                )
+                vulnerabilities.extend(dast_vulnerabilities)
+                results["dast_scan"] = dast_vulnerabilities
+
+                logging.info(f"Found {len(dast_vulnerabilities)} DAST vulnerabilities")
         except Exception as e:
             logging.error(f"Error running DAST scan: {e}")
-            results["dast_scan"] = str(e)
+            results["dast_scan"] = f"Error running DAST scan: {str(e)}"
 
     # Store all vulnerabilities
     if vulnerabilities:

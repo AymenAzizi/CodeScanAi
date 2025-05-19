@@ -414,14 +414,20 @@
                     </div>
                     <div class="vulnerability-card-body">
                         <div class="vulnerability-meta">
-                            <span><strong>File:</strong> ${cleanFilePath}</span>
+                            <span><strong>${title.includes('DAST') ? 'URL:' : 'File:'}</strong> ${cleanFilePath}</span>
                             <span><strong>Line:</strong> ${line}</span>
                             <span><strong>Confidence:</strong> ${confidence}</span>
+                            ${title.includes('DAST') ? `<span><strong>Type:</strong> Web Vulnerability</span>` : ''}
                         </div>
                         <div class="code-block">
                             <div class="code-block-header">${title.includes('DAST') ? 'Vulnerable URL/Endpoint' : 'Vulnerable Code'}</div>
-                            <pre><code>${vulnerableCode.trim() || "Code not available"}</code></pre>
+                            <pre><code>${vulnerableCode.trim() || (title.includes('DAST') ? cleanFilePath : "Code not available")}</code></pre>
                         </div>
+                        ${title.includes('DAST') ? `
+                        <div class="alert alert-danger mt-3">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Security Risk:</strong> This URL contains a vulnerability that could be exploited by attackers.
+                        </div>` : ''}
                     </div>
                 </div>
             `;
@@ -438,19 +444,36 @@
                                 <div class="col-md-6">
                                     <div class="code-block">
                                         <div class="code-block-header">${title.includes('DAST') ? 'Vulnerable URL/Endpoint' : 'Original Code'}</div>
-                                        <pre><code>${vulnerableCode.trim()}</code></pre>
+                                        <pre><code>${vulnerableCode.trim() || (title.includes('DAST') ? cleanFilePath : "Code not available")}</code></pre>
                                     </div>
+                                    ${title.includes('DAST') ? `
+                                    <div class="alert alert-warning mt-2">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <strong>DAST Finding:</strong> This is a web vulnerability detected by dynamic scanning.
+                                    </div>` : ''}
                                 </div>
                                 <div class="col-md-6">
                                     <div class="fix-suggestion">
                                         <h4>Suggested Fix</h4>
                                         <div class="code-block">
-                                            <pre><code>${suggestedFix.trim() || "**No fix suggestion available**"}</code></pre>
+                                            <pre><code>${suggestedFix.trim() || (title.includes('DAST') ? "Web vulnerabilities require manual remediation" : "**No fix suggestion available**")}</code></pre>
                                         </div>
-                                        ${!suggestedFix.trim() ? `
+                                        ${!suggestedFix.trim() && !title.includes('DAST') ? `
                                         <div class="alert alert-warning mt-2">
-                                            <i class="fas fa-exclamation-triangle"></i>
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
                                             Fix generation may have failed due to API credit limits. Try running the scan again with your new API key.
+                                        </div>` : ''}
+                                        ${title.includes('DAST') ? `
+                                        <div class="alert alert-info mt-2">
+                                            <i class="fas fa-shield-alt me-2"></i>
+                                            <strong>Remediation Steps:</strong>
+                                            <ul class="mb-0 mt-2">
+                                                <li>Validate all user inputs</li>
+                                                <li>Implement proper input sanitization</li>
+                                                <li>Use parameterized queries for database operations</li>
+                                                <li>Apply content security policies</li>
+                                                <li>Consider using a web application firewall</li>
+                                            </ul>
                                         </div>` : ''}
                                     </div>
                                 </div>
