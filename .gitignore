@@ -130,6 +130,12 @@ ENV/
 env.bak/
 venv.bak/
 
+# Security reports and sensitive files
+security_report.md
+*_token*
+*.key
+*.pem
+
 # Spyder project settings
 .spyderproject
 .spyproject
